@@ -40,36 +40,122 @@ public class GamePanel extends JPanel implements ActionListener {
         draw(g);
     }
     public void draw(Graphics g){
+        // creating the grid
         for(int i = 0; i< SCREEN_HEIGHT/UNIT_SIZE; i++){
             g.drawLine(i*UNIT_SIZE, 0, i*UNIT_SIZE, SCREEN_HEIGHT);
             g.drawLine(0, i*UNIT_SIZE, SCREEN_WIDTH, i*UNIT_SIZE);
 
         }
+        // creating apple random loc
+        g.setColor(Color.red);
+        g.fillOval(appleX, appleY, UNIT_SIZE, UNIT_SIZE);
+
+        // creating the snake body + head
+        for(int i = 0; i < bodyParts; i++){
+            if(i == 0){
+                g.setColor(Color.green);
+                g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
+            }else{
+                g.setColor(new Color(45,180,0));
+                g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
+            }
+        }
     }
     public void newApple(){
-
+        //random location for apple
+        appleX = random.nextInt((int)(SCREEN_WIDTH/UNIT_SIZE)) * UNIT_SIZE;
+        appleY = random.nextInt((int)(SCREEN_HEIGHT/UNIT_SIZE)) * UNIT_SIZE;
     }
     public void move(){
+        for(int i = bodyParts; i > 0; i--){
+            x[i] = x[i - 1];
+            y[i] = y[i - 1];
+        }
 
+        switch(direction){
+            case'N':
+                y[0] = y[0] - UNIT_SIZE;
+                break;
+            case'S':
+                y[0] = y[0] + UNIT_SIZE;
+                break;
+            case'E':
+                x[0] = x[0] + UNIT_SIZE;
+                break;
+            case'W':
+                x[0] = x[0] - UNIT_SIZE;
+                break;
+
+        }
     }
     public void checkApple(){
 
     }
     public void checkCollisions(){
+        // if head collides with body
+        for(int i = bodyParts; i > 0; i--){
+            if((x[0] == x[i]) && (y[0] == y[i])) {
+                running = false;
+            }
+        }
+        // if head touches left border
+        if(x[0] < 0){
+            running = false;
+        }
+        // if head touches right border
+        if(x[0] > SCREEN_WIDTH){
+            running = false;
+        }
+        // if head touches top border
+        if(y[0] < 0){
+            running = false;
+        }
 
+        if(y[0] > SCREEN_HEIGHT){
+            running = false;
+        }
+        if(!running){
+            timer.stop();
+        }
     }
     public void gameOver(Graphics g){
 
     }
     @Override
     public void actionPerformed(ActionEvent e) {
-
+        if(running){
+            move();
+            checkApple();
+            checkCollisions();
+        }
+        repaint();
     }
 
     public class MyKeyAdapter extends KeyAdapter{
         @Override
         public void keyPressed(KeyEvent e){
-
+            switch(e.getKeyCode()){
+                case KeyEvent.VK_LEFT, KeyEvent.VK_A:
+                    if(direction != 'E'){
+                        direction = 'W';
+                    }
+                    break;
+                case KeyEvent.VK_RIGHT, KeyEvent.VK_D:
+                    if(direction != 'W'){
+                        direction = 'E';
+                    }
+                    break;
+                case KeyEvent.VK_UP, KeyEvent.VK_W:
+                    if(direction != 'S'){
+                        direction = 'N';
+                    }
+                    break;
+                case KeyEvent.VK_DOWN, KeyEvent.VK_S:
+                    if(direction != 'N'){
+                        direction = 'S';
+                    }
+                    break;
+            }
         }
     }
 }
