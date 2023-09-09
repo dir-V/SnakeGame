@@ -30,10 +30,22 @@ public class GamePanel extends JPanel implements ActionListener {
         startGame();
     }
     public void startGame(){
-        newApple();
+        //reseting Snake
+        bodyParts = 6;
+        applesEaten = 0;
+        direction = 'E';
+        for(int i = 0; i < bodyParts; i++){
+            x[i] = 0;
+            y[i] = 0;
+        }
         running = true;
+        newApple();
+        if(timer != null){
+            timer.stop();
+        }
         timer = new Timer(DELAY, this);
         timer.start();
+
     }
     public void paintComponent(Graphics g){
         super.paintComponent(g);
@@ -62,7 +74,7 @@ public class GamePanel extends JPanel implements ActionListener {
                     g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
                 }
                 g.setColor(Color.white);
-                g.setFont(new Font("Ink Free", Font.BOLD, 75));
+                g.setFont(new Font("Noto Mono", Font.BOLD, 50));
                 FontMetrics metrics = getFontMetrics(g.getFont());
                 g.drawString("Score : " + applesEaten, (SCREEN_WIDTH - metrics.stringWidth("Score : " + applesEaten))/2, g.getFont().getSize());
             }
@@ -133,13 +145,16 @@ public class GamePanel extends JPanel implements ActionListener {
     }
     public void gameOver(Graphics g){
         g.setColor(Color.white);
-        g.setFont(new Font("Ink Free", Font.BOLD, 75));
+        g.setFont(new Font("Noto Mono", Font.BOLD, 75));
         FontMetrics metrics1 = getFontMetrics(g.getFont());
         g.drawString("Game Over", (SCREEN_WIDTH - metrics1.stringWidth("Game Over"))/2, (SCREEN_HEIGHT/2));
         g.setColor(Color.white);
-        g.setFont(new Font("Ink Free", Font.BOLD, 75));
+        g.setFont(new Font("Noto Mono", Font.BOLD, 50));
         FontMetrics metrics2 = getFontMetrics(g.getFont());
         g.drawString("Score : " + applesEaten, (SCREEN_WIDTH - metrics2.stringWidth("Score : " + applesEaten))/2, g.getFont().getSize());
+        g.setFont(new Font("Noto Mono", Font.BOLD, 50));
+        FontMetrics metrics3 = getFontMetrics(g.getFont());
+        g.drawString("Press Space to Restart", (SCREEN_WIDTH - metrics3.stringWidth("Press Space to Restart"))/2, (SCREEN_HEIGHT*3/5));
     }
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -175,7 +190,13 @@ public class GamePanel extends JPanel implements ActionListener {
                         direction = 'S';
                     }
                     break;
+                case KeyEvent.VK_SPACE:
+                    if(!running) {
+                        startGame();
+                    }
+                    break;
             }
+
         }
     }
 }
